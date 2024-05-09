@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Api Prayer Timings</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<div class="prayertime">
+    <div class="header">
+        <p class="nameCity" id="nameCity">
+            حلب
+        </p>
+        <h6 id="date">الجمعة 24 - 10 - 2023</h6>
+    </div>
+    <hr>
+    <div class="container">
+        <div class="item">
+            <div class="title">
+                <span class="prayer">الفجر</span>
+            </div>
+            <div class="info">
+                <p class="date" id="fajr-time">05:40</p>
+            </div>
+        </div>
+        <div class="item">
+            <div class="title">
+                <span class="prayer">الشروق</span>
+            </div>
+            <div class="info">
+                <p class="date" id="sunrise-time">05:40</p>
+            </div>
+        </div>
+        <div class="item">
+            <div class="title">
+                <span class="prayer">الظهر</span>
+            </div>
+            <div class="info">
+                <p class="date" id="dhuhr-time">05:40</p>
+            </div>
+        </div>
+        <div class="item">
+            <div class="title">
+                <span class="prayer">العصر</span>
+            </div>
+            <div class="info">
+                <p class="date" id="asr-time">05:40</p>
+            </div>
+        </div>
+        <div class="item">
+            <div class="title">
+                <span class="prayer">المغرب</span>
+            </div>
+            <div class="info">
+                <p class="date" id="sunset-time">05:40</p>
+            </div>
+        </div>
+        <div class="item">
+            <div class="title">
+                <span class="prayer">العشاء</span>
+            </div>
+            <div class="info">
+                <p class="date" id="isha-time">05:40</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="select">
+    <select name="" id="option">
+    </select>
+</div>
+
+
+
+
+
+<script>
+let cities = [
+    {
+        arabicName : "حلب",
+        name : "Halab"
+    },
+    {
+        arabicName : "دمشق",
+        name : "Dimashq"
+    },
+    {
+        arabicName : "ريف دمشق",
+        name : "Rīf Dimashq"
+    },
+    {
+        arabicName : "اللاذقية",
+        name : "Al Lādhiqīyah"
+    },
+    {
+        arabicName : "حماة",
+        name : "Ḩamāh"
+    }, 
+    {
+        arabicName : "حمص",
+        name : "Ḩimş"
+    },
+    {
+        arabicName : "ادلب",
+        name : "Idlib"
+    },
+    {
+        arabicName : "طرطوس",
+        name : "Ţarţūs"
+    },
+    {
+        arabicName : "الحكسة",
+        name : "Al Ḩasakah"
+    },
+    {
+        arabicName : "القنيطرة",
+        name : "Al Qunayţirah"
+    },
+    {
+        arabicName : "الرقة",
+        name : "Ar Raqqah"
+    }
+]
+
+for(let city of cities){
+    document.getElementById("option").innerHTML += `<option>${city.arabicName}</option>`
+}
+document.getElementById("option").addEventListener("change", function(){
+    document.getElementById("nameCity").innerHTML = this.value;
+    let cityName = "";
+    for(let city of cities){
+        if(city.arabicName == this.value ){
+            cityName = city.name
+}
+}
+getPrayerTimingDate(cityName)
+})
+
+function getPrayerTimingDate(cityName){
+    let params = {
+        country : "SY",
+        city : cityName
+    }
+    axios.get('https://api.aladhan.com/v1/timingsByCity', {
+    params: params
+  })
+  .then(function (response) {
+    let time = response.data.data.timings;
+    getTimingOfDate("fajr-time" , time.Fajr);
+    getTimingOfDate("sunrise-time" , time.Sunrise);
+    getTimingOfDate("dhuhr-time" , time.Dhuhr);
+    getTimingOfDate("asr-time" , time.Asr);
+    getTimingOfDate("sunset-time" , time.Sunset);
+    getTimingOfDate("isha-time" , time.Isha);
+let readable = response.data.data.date.readable;
+let weekday = response.data.data.date.hijri.weekday.ar;
+let hijri = response.data.data.date.hijri.date;
+document.getElementById("date").innerHTML =`${weekday} ${readable} </br> <p> الموافق:  ${hijri} </p>`
+
+
+  })
+  .catch(function (error) {
+    console.log(error);
+  })
+}
+
+getPrayerTimingDate("Halab")
+
+function getTimingOfDate(id , time){
+
+    document.getElementById(id).innerHTML = time
+}
+
+
+
+
+
+
+
+</script>
+</body>
+</html>
